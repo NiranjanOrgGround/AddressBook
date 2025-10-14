@@ -14,10 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: copy file
-        shell: bash
+        shell: pwsh
         run: |
-          # Use the appropriate command for the Windows shell
-          # For PowerShell:
-          Write-Host "Current location is: $(pwd)"
-          Get-ChildItem 
-          Copy-Item -Path "pom.xml" -Destination "D:\Documents"
+          Get-Location
+          Get-ChildItem
+          Copy-Item "pom.xml" -Destination "D:\Documents" -Force
