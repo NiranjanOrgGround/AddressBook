@@ -1,6 +1,11 @@
 name: copy test
 
 on:
+  push:
+    branches:
+      - 7.7
+    paths:
+      - '.github/workflows/copy.yml'
   workflow_dispatch:
 
 jobs:
@@ -11,5 +16,8 @@ jobs:
       - name: copy file
         shell: bash
         run: |
-          pwd && ls
-          cp pom.xml /d/Documents
+          # Use the appropriate command for the Windows shell
+          # For PowerShell:
+          Write-Host "Current location is: $(pwd)"
+          Get-ChildItem 
+          Copy-Item -Path "pom.xml" -Destination "D:\Documents"
