@@ -1,0 +1,13 @@
+name: copy test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copy:
+    runs-on: tomcat-server
+    steps:
+      - uses: actions/checkout@v5
+      - name: copy file
+        shell: bash
+        run: cp pom.xml /d/Documents
