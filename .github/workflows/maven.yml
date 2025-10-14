@@ -26,6 +26,8 @@ jobs:
           path: target/**.war
 
   deploy:
+    needs: build
+    environment: DEV
     runs-on: tomcat-server
     steps:
       - name: Download a Build Artifact
