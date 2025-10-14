@@ -10,4 +10,6 @@ jobs:
       - uses: actions/checkout@v5
       - name: copy file
         shell: bash
-        run: cp pom.xml /d/Documents
+        run: |
+          pwd && ls
+          cp pom.xml /d/Documents
