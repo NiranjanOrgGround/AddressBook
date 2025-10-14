@@ -40,4 +40,4 @@ jobs:
       - name: Deploying App
         run: |
           Copy-Item -Path "artifact\\addressbook-2.0.war" -Destination "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1_Tomcat-10\\webapps\\addressbook.war" -Force
-          Restart-Service -Name Tomcat-10
+          Restart-Service -Name "Tomcat-10" -Force
