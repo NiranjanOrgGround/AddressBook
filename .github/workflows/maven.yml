@@ -38,5 +38,7 @@ jobs:
           path: artifact
 
       - name: Deploying App
+        shell: pwsh
         run: |
           Copy-Item -Path "artifact\\addressbook-2.0.war" -Destination "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps\\addressbook-2.0.war" -Force
+      
