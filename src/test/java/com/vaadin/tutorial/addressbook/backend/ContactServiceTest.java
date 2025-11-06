@@ -90,7 +90,3 @@ public class ContactServiceTest {
         assertNotEquals("Different inputs should produce different hashes", hash1, hash2);
     }
 }
-        String hash2 = service.weakHash("password2");
-        assertNotEquals("Different inputs should produce different hashes", hash1, hash2);
-    }
-}
