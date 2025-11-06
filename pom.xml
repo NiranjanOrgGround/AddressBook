@@ -13,6 +13,14 @@
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 		<vaadin.version>7.5.6</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+		
+		<!-- SonarQube properties -->
+		<sonar.projectKey>NiranjanOrgGround_AddressBook</sonar.projectKey>
+		<sonar.organization>github-personal-org</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.java.source>1.8</sonar.java.source>
+		<sonar.java.target>1.8</sonar.java.target>
+		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 	<repositories>
 		<!-- Main Maven repository -->
