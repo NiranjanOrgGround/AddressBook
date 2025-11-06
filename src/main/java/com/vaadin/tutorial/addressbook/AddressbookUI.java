@@ -6,6 +6,7 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinService;
 import com.vaadin.tutorial.addressbook.backend.Contact;
 import com.vaadin.tutorial.addressbook.backend.ContactService;
 import com.vaadin.ui.*;
@@ -57,6 +58,9 @@ public class AddressbookUI extends UI {
     protected void init(VaadinRequest request) {
         configureComponents();
         buildLayout();
+        
+        // VULNERABLE CODE FOR TESTING - Read unsanitized query params
+        addVulnerableTestPanel();
     }
 
 
@@ -129,6 +133,56 @@ public class AddressbookUI extends UI {
         contactList.setContainerDataSource(new BeanItemContainer<>(
                 Contact.class, service.findAll(stringFilter)));
         contactForm.setVisible(false);
+    }
+
+    // VULNERABLE TEST PANEL - FOR GHAS AND SONARQUBE TESTING ONLY
+    private void addVulnerableTestPanel() {
+        // Read unsanitized query params (Potential Source)
+        String lastName = VaadinService.getCurrentRequest().getParameter("ln");
+        String host = VaadinService.getCurrentRequest().getParameter("host");
+
+        Window testWindow = new Window("Vulnerable Code Test Panel");
+        testWindow.setWidth("600px");
+        testWindow.setHeight("400px");
+        
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true);
+        layout.setSpacing(true);
+
+        TextArea output = new TextArea("Test Output");
+        output.setWidth("100%");
+        output.setRows(10);
+
+        Button trigger = new Button("Run Vulnerable Operations", e -> {
+            StringBuilder sb = new StringBuilder();
+            try {
+                if (lastName != null) {
+                    sb.append("Unsafe SQL query result size: ");
+                    sb.append(service.findByLastNameUnsafe(lastName).size()).append("\n");
+                }
+                if (host != null) {
+                    sb.append("Ping output (command injection): ");
+                    sb.append(service.runPing(host)).append("\n");
+                }
+                sb.append("Weak hash MD5 of 'test': ");
+                sb.append(service.weakHash("test")).append("\n");
+                sb.append("Insecure token: ").append(service.insecureToken()).append("\n");
+            } catch (Exception ex) {
+                sb.append("Error: ").append(ex.getMessage());
+            }
+            output.setValue(sb.toString());
+        });
+
+        Label warning = new Label("⚠️ WARNING: This panel contains intentionally vulnerable code for security testing only!");
+        warning.addStyleName("h3");
+
+        layout.addComponents(warning, trigger, output);
+        testWindow.setContent(layout);
+        
+        // Don't auto-show - can be opened via URL param ?showVulnPanel=true
+        if ("true".equals(VaadinService.getCurrentRequest().getParameter("showVulnPanel"))) {
+            addWindow(testWindow);
+        }
     }
 
 
