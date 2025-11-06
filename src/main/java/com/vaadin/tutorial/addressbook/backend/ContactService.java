@@ -153,7 +153,14 @@ public class ContactService {
     public String runPing(String host) throws IOException {
         // Unsanitized user input in command execution
         Process p = Runtime.getRuntime().exec("ping -c 1 " + host);
-        return new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        java.io.BufferedReader reader = new java.io.BufferedReader(
+            new java.io.InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
+        StringBuilder output = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            output.append(line).append("\n");
+        }
+        return output.toString();
     }
 
 }
