@@ -124,7 +124,13 @@ public class ContactService {
     // Weak hashing algorithm (Weak Crypto)
     public String weakHash(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5"); // MD5 is weak
-        return new BigInteger(1, md.digest(input.getBytes(StandardCharsets.UTF_8))).toString(16);
+        BigInteger bigInt = new BigInteger(1, md.digest(input.getBytes(StandardCharsets.UTF_8)));
+        String hashtext = bigInt.toString(16);
+        // Pad with leading zeros to get 32 chars
+        while (hashtext.length() < 32) {
+            hashtext = "0" + hashtext;
+        }
+        return hashtext;
     }
 
     // Unsafe deserialization (Deserialization of Untrusted Data)
