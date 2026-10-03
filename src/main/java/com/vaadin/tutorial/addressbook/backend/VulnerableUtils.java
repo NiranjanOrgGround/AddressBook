@@ -30,11 +30,26 @@ public class VulnerableUtils {
 
     // CWE-327: Use of a Broken or Risky Cryptographic Algorithm
     public static String encryptWithDES(String data, String key) throws Exception {
-        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "DES");
-        Cipher cipher = Cipher.getInstance("DES"); // Weak encryption
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-        byte[] encrypted = cipher.doFinal(data.getBytes());
-        return new String(encrypted);
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        byte[] normalizedKey = new byte[16]; // AES-128 key
+        System.arraycopy(keyBytes, 0, normalizedKey, 0, Math.min(keyBytes.length, normalizedKey.length));
+
+        SecretKeySpec keySpec = new SecretKeySpec(normalizedKey, "AES");
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+        byte[] iv = new byte[12]; // Recommended IV size for GCM
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(iv);
+
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(128, iv);
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+
+        byte[] encrypted = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+        byte[] result = new byte[iv.length + encrypted.length];
+        System.arraycopy(iv, 0, result, 0, iv.length);
+        System.arraycopy(encrypted, 0, result, iv.length, encrypted.length);
+
+        return Base64.getEncoder().encodeToString(result);
     }
 
     // CWE-330: Use of Insufficiently Random Values
