@@ -1,14 +1,17 @@
 package com.vaadin.tutorial.addressbook.backend;
 
 import javax.crypto.Cipher;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Base64;
 import java.util.Random;
 
 /**
@@ -163,10 +166,18 @@ public class VulnerableUtils {
 
     // CWE-326: Inadequate Encryption Strength
     public static String weakEncryption(String data) throws Exception {
-        SecretKeySpec key = new SecretKeySpec("12345678".getBytes(), "DES");
-        Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); // Weak algorithm and mode
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        return new String(cipher.doFinal(data.getBytes()));
+        SecretKeySpec key = new SecretKeySpec("1234567890ABCDEF".getBytes(StandardCharsets.UTF_8), "AES");
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        byte[] iv = new byte[12];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(iv);
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(128, iv);
+        cipher.init(Cipher.ENCRYPT_MODE, key, gcmSpec);
+        byte[] encrypted = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+        byte[] result = new byte[iv.length + encrypted.length];
+        System.arraycopy(iv, 0, result, 0, iv.length);
+        System.arraycopy(encrypted, 0, result, iv.length, encrypted.length);
+        return Base64.getEncoder().encodeToString(result);
     }
 
     // CWE-759: Use of a One-Way Hash without a Salt
